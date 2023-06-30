@@ -1,0 +1,27 @@
+{
+  "name": "jpeg-time-mismatch-fixer",
+  "version": "1.0.0",
+  "description": "This program takes fixes the time discrepancy (difference between the photo's time and real time) of the photo.",
+  "main": "fixer.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joshsj89/JPEG-Time-Mismatch-Fixer.git"
+  },
+  "keywords": [
+    "jpg",
+    "jpeg",
+    "exif"
+  ],
+  "author": "Josh Kindarara",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/joshsj89/JPEG-Time-Mismatch-Fixer/issues"
+  },
+  "homepage": "https://github.com/joshsj89/JPEG-Time-Mismatch-Fixer#readme",
+  "dependencies": {
+    "piexifjs": "^1.0.6"
+  }
+}
