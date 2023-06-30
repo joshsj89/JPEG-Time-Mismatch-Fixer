@@ -5,11 +5,8 @@ const piexif = require('piexifjs');
 /*
 36867: DateTimeOriginal
 36868: DateTimeDigitized
+37521: SubsecTimeOriginal
 */
-
-//  Canon EOS Rebel T3i: 00:04:16 ahead (4 minutes, 16 seconds)
-
-// 2023:06:28 10:40:22 -> 2023-06-28T10:44:22
 
 const folderPath = 'JPEG-Time-Mismatch-Fixer/images/';
 
