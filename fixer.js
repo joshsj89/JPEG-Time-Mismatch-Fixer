@@ -127,3 +127,9 @@ fs.readdir(folderPath, (err, files) => {
 */
 
 console.log('Complete');
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Next Steps:
+//      -Make it more efficient by making program run in parallel (async) and implement batch control
+//      -Add command line arguments or inputs for offset
+//      -Add command line arguments or inputs for folder path
