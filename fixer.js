@@ -30,6 +30,14 @@ const getJpegFileFromBinaryData = (binaryString, filename) => {
 
 ////////////////////////////////////////////////////////////////////////////////
 
+const chunkArray = (array, size) => {
+    const chunks = [];
+    for (let i = 0; i < array.length; i += size) {
+        chunks.push(array.slice(i, i + size));
+    }
+    return chunks;
+}
+
 const getNewTimestamp = (originalTimestamp, offset) => {
     const originalTimestampParts = originalTimestamp.split(/[:\s]/);
     const date = new Date(
@@ -93,43 +101,36 @@ const updateImageExifData = (imagePath, offset) => {
     fs.utimesSync(imagePath, new Date(), newDate);
 }
 
-try {
-    const files = fs.readdirSync(folderPath);
+const fixer = async () => {
 
-    const jpgFiles = files.filter(file => path.extname(file).toLowerCase() === '.jpg');
+    const concurrency = 50; // Number of files to process at a time
 
-    const offset = '+0000:00:00 00:04:16';
+    const files = fs.readdirSync(folderPath); 
+
+    try {
+        const offset = '+0000:00:00 00:04:16';
     
-    jpgFiles.forEach(file => {
-        const filePath = path.join(folderPath, file);
-        updateImageExifData(filePath, offset);
-    });
-
+        const jpgFiles = files.filter(file => path.extname(file).toLowerCase() === '.jpg');
+        const chunks = chunkArray(jpgFiles, concurrency); // Split files into chunks
     
-} catch (err) {
-    console.error('Error reading folder: ', err);
-}
-
-/* // Async version
-fs.readdir(folderPath, (err, files) => {
-    if (err) {
+        for (const chunk of chunks) {
+            const promises = chunk.map(file => {
+                const filePath = path.join(folderPath, file);
+                updateImageExifData(filePath, offset);
+            });
+            await Promise.all(promises);
+        }
+    } catch (err) {
         console.error('Error reading folder:', err);
         return;
     }
+}
 
-    const jpgFiles = files.filter(file => path.extname(file).toLowerCase() === '.jpg');
-    
-    jpgFiles.forEach(file => {
-        const filePath = path.join(folderPath, file);
-        updateImageExifData(filePath);
-    });
-});
-*/
+fixer();
 
 console.log('Complete');
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Next Steps:
-//      -Make it more efficient by making program run in parallel (async) and implement batch control
 //      -Add command line arguments or inputs for offset
 //      -Add command line arguments or inputs for folder path
