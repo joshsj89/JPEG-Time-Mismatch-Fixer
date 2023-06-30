@@ -1,7 +1,7 @@
 {
   "name": "jpeg-time-mismatch-fixer",
   "version": "1.0.0",
-  "description": "This program takes fixes the time discrepancy (difference between the photo's time and real time) of the photo.",
+  "description": "Fixes the time discrepancy between the photo's time and real time.",
   "main": "fixer.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -16,7 +16,7 @@
     "exif"
   ],
   "author": "Josh Kindarara",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/joshsj89/JPEG-Time-Mismatch-Fixer/issues"
   },
