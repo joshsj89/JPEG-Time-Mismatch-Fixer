@@ -100,7 +100,7 @@ const updateImageExifData = (imagePath, offset) => {
 
 const fixer = async () => {
 
-    const concurrency = 50; // Number of files to process at a time
+    const concurrency = 100; // Number of files to process at a time
 
     const files = fs.readdirSync(folderPath); 
 
