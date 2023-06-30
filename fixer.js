@@ -30,7 +30,7 @@ const getJpegFileFromBinaryData = (binaryString, filename) => {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-const getNewTimestamp = (originalTimestamp, originalSubsecTime, offset) => {
+const getNewTimestamp = (originalTimestamp, offset) => {
     const originalTimestampParts = originalTimestamp.split(/[:\s]/);
     const date = new Date(
         originalTimestampParts[0], 
@@ -38,9 +38,7 @@ const getNewTimestamp = (originalTimestamp, originalSubsecTime, offset) => {
         originalTimestampParts[2], 
         originalTimestampParts[3], 
         originalTimestampParts[4], 
-        originalTimestampParts[5], 
-        originalSubsecTime);
-    console.log('Old ' + date.toISOString());
+        originalTimestampParts[5]);
 
     const operation = offset[0];
 
@@ -68,27 +66,31 @@ const getNewTimestamp = (originalTimestamp, originalSubsecTime, offset) => {
         newTimestampParts[2], 
         newTimestampParts[3], 
         newTimestampParts[4], 
-        newTimestampParts[5], 
-        originalSubsecTime);
+        newTimestampParts[5]);
 
-    console.log('New ' + newDate.toISOString());
+    return newDate;
 }
 
 const updateImageExifData = (imagePath, offset) => {
     const exifData = getExifFromJpegFile(imagePath);
     const originalTimestamp = exifData.Exif['36867'];
-    const originalSubsecTime = exifData.Exif['37521'];
+    const subSecTime = exifData.Exif['37521'];
     
-    const newTimestamp = getNewTimestamp(originalTimestamp, originalSubsecTime, offset);
+    const newDate = getNewTimestamp(originalTimestamp, offset);
+    newDate.setMilliseconds(Number(subSecTime));
+    const newTimestamp = `${newDate.getFullYear()}:${(newDate.getMonth() + 1).toString().padStart(2, '0')}:${newDate.getDate().toString().padStart(2, '0')} ${newDate.getHours().toString().padStart(2, '0')}:${newDate.getMinutes().toString().padStart(2, '0')}:${newDate.getSeconds().toString().padStart(2, '0')}`;
     
-    //exifData.Exif['36867'] = newTimestamp;
-    //exifData.Exif['36868'] = newTimestamp;
+    exifData.Exif['36867'] = newTimestamp;
+    exifData.Exif['36868'] = newTimestamp;
     
-    //const exifDump = piexif.dump(exifData)
+    const exifDump = piexif.dump(exifData)
     
-    //const temp = piexif.insert(exifDump, getBinaryDataFromJpegFile(imagePath));
+    const binaryData = piexif.insert(exifDump, getBinaryDataFromJpegFile(imagePath));
     
-    //getJpegFileFromBinaryData(temp, imagePath);
+    getJpegFileFromBinaryData(binaryData, imagePath);
+
+    // Update file's Modified and Accessed dates
+    fs.utimesSync(imagePath, new Date(), newDate);
 }
 
 try {
