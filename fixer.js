@@ -77,25 +77,30 @@ const getNewTimestamp = (originalTimestamp, offset) => {
 }
 
 const updateImageExifData = (imagePath, offset) => {
-    const exifData = getExifFromJpegFile(imagePath);
-    const originalTimestamp = exifData.Exif['36867'];
-    const subSecTime = exifData.Exif['37521'];
+    return new Promise((resolve, reject) => {
+        const exifData = getExifFromJpegFile(imagePath);
+        const originalTimestamp = exifData.Exif['36867'];
+        const subSecTime = exifData.Exif['37521'];
+        
+        const newDate = getNewTimestamp(originalTimestamp, offset);
+        newDate.setMilliseconds(Number(subSecTime));
+        const newTimestamp = `${newDate.getFullYear()}:${(newDate.getMonth() + 1).toString().padStart(2, '0')}:${newDate.getDate().toString().padStart(2, '0')} ${newDate.getHours().toString().padStart(2, '0')}:${newDate.getMinutes().toString().padStart(2, '0')}:${newDate.getSeconds().toString().padStart(2, '0')}`;
+        
+        exifData.Exif['36867'] = newTimestamp;
+        exifData.Exif['36868'] = newTimestamp;
+        
+        const exifDump = piexif.dump(exifData)
+        
+        const binaryData = piexif.insert(exifDump, getBinaryDataFromJpegFile(imagePath));
+        
+        getJpegFileFromBinaryData(binaryData, imagePath);
     
-    const newDate = getNewTimestamp(originalTimestamp, offset);
-    newDate.setMilliseconds(Number(subSecTime));
-    const newTimestamp = `${newDate.getFullYear()}:${(newDate.getMonth() + 1).toString().padStart(2, '0')}:${newDate.getDate().toString().padStart(2, '0')} ${newDate.getHours().toString().padStart(2, '0')}:${newDate.getMinutes().toString().padStart(2, '0')}:${newDate.getSeconds().toString().padStart(2, '0')}`;
-    
-    exifData.Exif['36867'] = newTimestamp;
-    exifData.Exif['36868'] = newTimestamp;
-    
-    const exifDump = piexif.dump(exifData)
-    
-    const binaryData = piexif.insert(exifDump, getBinaryDataFromJpegFile(imagePath));
-    
-    getJpegFileFromBinaryData(binaryData, imagePath);
+        // Update file's Modified and Accessed dates
+        fs.utimesSync(imagePath, new Date(), newDate);
 
-    // Update file's Modified and Accessed dates
-    fs.utimesSync(imagePath, new Date(), newDate);
+        resolve();
+    });
+    
 }
 
 const fixer = async () => {
@@ -105,7 +110,7 @@ const fixer = async () => {
     const files = fs.readdirSync(folderPath); 
 
     try {
-        const offset = '+0000:00:00 00:04:16';
+        const offset = '-0000:00:00 00:04:16';
     
         const jpgFiles = files.filter(file => path.extname(file).toLowerCase() === '.jpg');
         const chunks = chunkArray(jpgFiles, concurrency); // Split files into chunks
@@ -113,7 +118,7 @@ const fixer = async () => {
         for (const chunk of chunks) {
             const promises = chunk.map(file => {
                 const filePath = path.join(folderPath, file);
-                updateImageExifData(filePath, offset);
+                return updateImageExifData(filePath, offset);
             });
             await Promise.all(promises);
         }
@@ -121,11 +126,12 @@ const fixer = async () => {
         console.error('Error reading folder:', err);
         return;
     }
+
+    console.log('Complete');
 }
 
 fixer();
 
-console.log('Complete');
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Next Steps:
