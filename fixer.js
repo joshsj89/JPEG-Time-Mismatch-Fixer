@@ -71,7 +71,8 @@ const getNewTimestamp = (originalTimestamp, offset) => {
         newTimestampParts[2], 
         newTimestampParts[3], 
         newTimestampParts[4], 
-        newTimestampParts[5]);
+        newTimestampParts[5]
+    );
 
     return newDate;
 }
@@ -110,7 +111,7 @@ const fixer = async () => {
     const files = fs.readdirSync(folderPath); 
 
     try {
-        const offset = '-0000:00:00 00:04:16';
+        const offset = '-0000:00:00 03:00:12';
     
         const jpgFiles = files.filter(file => path.extname(file).toLowerCase() === '.jpg');
         const chunks = chunkArray(jpgFiles, concurrency); // Split files into chunks
