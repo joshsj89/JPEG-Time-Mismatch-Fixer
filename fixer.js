@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require('fs');
 const path = require('path');
 const piexif = require('piexifjs');
-
 /*
 36867: DateTimeOriginal
 36868: DateTimeDigitized
@@ -76,7 +75,7 @@ const fixer = async () => {
     const concurrency = 100; // Number of files to process at a time
     const files = fs.readdirSync(folderPath);
     try {
-        const offset = '-0000:00:00 03:00:12';
+        const offset = '+0000:00:00 00:56:00';
         const jpgFiles = files.filter(file => path.extname(file).toLowerCase() === '.jpg');
         const chunks = chunkArray(jpgFiles, concurrency); // Split files into chunks
         for (const chunk of chunks) {

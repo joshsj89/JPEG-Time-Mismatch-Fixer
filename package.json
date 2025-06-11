@@ -23,5 +23,8 @@
   "homepage": "https://github.com/joshsj89/JPEG-Time-Mismatch-Fixer#readme",
   "dependencies": {
     "piexifjs": "^1.0.6"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0"
   }
 }

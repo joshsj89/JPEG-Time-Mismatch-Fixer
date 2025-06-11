@@ -26,7 +26,7 @@ const getExifFromJpegFile = (filename: string): EXIF => {
     return piexif.load(getBinaryDataFromJpegFile(filename));
 }
 
-const getJpegFileFromBinaryData = (binaryString: WithImplicitCoercion<string>, filename: string) => {
+const getJpegFileFromBinaryData = (binaryString: string, filename: string) => {
     const imageBuffer = Buffer.from(binaryString, 'binary');
     fs.writeFileSync(filename, imageBuffer);
 }
